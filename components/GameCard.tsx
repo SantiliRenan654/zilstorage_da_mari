@@ -4,7 +4,7 @@ import { Game } from '../types';
 interface GameCardProps {
   game: Game;
   isAdmin: boolean;
-  onEdit: (game: Game) => void;
+  onEdit: () => void;
   onDelete: (id: number) => void;
 }
 
@@ -31,7 +31,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isAdmin, onEdit, onDelete }) 
         {isAdmin ? (
           <>
             <button 
-              onClick={() => onEdit(game)}
+              onClick={onEdit}
               className="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-8 rounded-md transition-colors w-full text-sm"
             >
               Editar

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SignupProps {
-  onSignup: (name: string, email: string, password: string) => { success: boolean, message?: string };
   onNavigateToLogin: () => void;
 }
 
+// Fix: Added a named interface for SignupWindow props to resolve children prop type error.
+interface SignupWindowProps {
+  children: React.ReactNode;
+}
+
 // Fix: Moved SignupWindow outside of the Signup component to prevent re-rendering issues that caused input fields to lose focus after each character typed.
-const SignupWindow = ({children}: {children: React.ReactNode}) => (
+const SignupWindow = ({children}: SignupWindowProps) => (
      <div className="w-full max-w-sm bg-[#3c3c3c] rounded-lg shadow-2xl overflow-hidden border border-gray-800">
         <div className="bg-[#2a2a2a] p-2 flex justify-between items-center border-b border-gray-500">
             <div className="flex items-center space-x-2">
@@ -25,17 +30,18 @@ const SignupWindow = ({children}: {children: React.ReactNode}) => (
     </div>
 );
 
-const Signup: React.FC<SignupProps> = ({ onSignup, onNavigateToLogin }) => {
+const Signup: React.FC<SignupProps> = ({ onNavigateToLogin }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const { signup } = useAuth();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        const result = onSignup(name, email, password);
+        const result = signup(name, email, password);
         if (result.success) {
             setSubmitted(true);
         } else {

@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
-  onLogin: (email: string, password: string) => { success: boolean, message?: string };
   onNavigateToSignup: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin, onNavigateToSignup }) => {
+const Login: React.FC<LoginProps> = ({ onNavigateToSignup }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const { login } = useAuth();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        const result = onLogin(email, password);
+        const result = login(email, password);
         if (!result.success) {
             setError(result.message || 'Falha no login.');
         }
