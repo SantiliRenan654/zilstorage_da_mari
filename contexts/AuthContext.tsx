@@ -3,12 +3,12 @@ import { User, UserStatus } from '../types';
 
 // Mock Data
 const initialUsers: User[] = [
-  { id: 1, name: 'Admin', email: 'admin@admin.com', password: 'admin', status: 'Ativo', isAdmin: true },
-  { id: 2, name: 'Usuário #1', email: 'email@teste.com', password: '123', status: 'Ativo', isAdmin: false },
-  { id: 3, name: 'Usuário #2', email: 'user2@teste.com', password: '123', status: 'Ativo', isAdmin: false },
-  { id: 4, name: 'Usuário #3', email: 'user3@teste.com', password: '123', status: 'Bloqueado', isAdmin: false },
-  { id: 5, name: 'Usuário #4', email: 'user4@teste.com', password: '123', status: 'Pendente', isAdmin: false },
-  { id: 6, name: 'Mariana Batalha Mesquita', email: 'marybatalha2012@gmail.com', password: '12345678', status: 'Pendente', isAdmin: false },
+  { id: 1, name: 'Admin', email: 'admin@admin.com', password: 'admin', status: 'Ativo', isAdmin: true, favorites: [1, 3] },
+  { id: 2, name: 'Usuário #1', email: 'email@teste.com', password: '123', status: 'Ativo', isAdmin: false, favorites: [2] },
+  { id: 3, name: 'Usuário #2', email: 'user2@teste.com', password: '123', status: 'Ativo', isAdmin: false, favorites: [] },
+  { id: 4, name: 'Usuário #3', email: 'user3@teste.com', password: '123', status: 'Bloqueado', isAdmin: false, favorites: [] },
+  { id: 5, name: 'Usuário #4', email: 'user4@teste.com', password: '123', status: 'Pendente', isAdmin: false, favorites: [] },
+  { id: 6, name: 'Mariana Batalha Mesquita', email: 'marybatalha2012@gmail.com', password: '12345678', status: 'Pendente', isAdmin: false, favorites: [] },
 ];
 
 interface AuthContextType {
@@ -19,11 +19,14 @@ interface AuthContextType {
   signup: (name: string, email: string, password: string) => { success: boolean, message?: string };
   updateUserStatus: (userId: number, status: UserStatus) => void;
   deleteUser: (userId: number) => void;
+  updateProfile: (userId: number, name: string, email: string) => { success: boolean, message?: string };
+  changePassword: (userId: number, oldPass: string, newPass: string) => { success: boolean, message?: string };
+  deleteSelf: () => void;
+  toggleFavoriteGame: (gameId: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Fix: Added a named interface for AuthProvider props to resolve children prop type error.
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -59,22 +62,93 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       password,
       status: 'Pendente',
       isAdmin: false,
+      favorites: []
     };
-    setUsers([...users, newUser]);
+    setUsers(prevUsers => [...prevUsers, newUser]);
     return { success: true };
   };
 
   const updateUserStatus = (userId: number, status: UserStatus) => {
-    setUsers(users.map(user =>
+    setUsers(prevUsers => prevUsers.map(user =>
       user.id === userId ? { ...user, status } : user
     ));
   };
 
   const deleteUser = (userId: number) => {
-    setUsers(users.filter(user => user.id !== userId));
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+  };
+  
+  const updateProfile = (userId: number, name: string, email: string) => {
+    if (users.some(user => user.email === email && user.id !== userId)) {
+        return { success: false, message: 'Este e-mail já está em uso por outra conta.' };
+    }
+    
+    setUsers(prevUsers => {
+        const updatedUsers = prevUsers.map(user =>
+          user.id === userId ? { ...user, name, email } : user
+        );
+        if (currentUser?.id === userId) {
+            const updatedCurrentUser = updatedUsers.find(u => u.id === userId);
+            if(updatedCurrentUser) setCurrentUser(updatedCurrentUser);
+        }
+        return updatedUsers;
+    });
+    
+    return { success: true };
   };
 
-  const value = { currentUser, users, login, logout, signup, updateUserStatus, deleteUser };
+  const changePassword = (userId: number, oldPass: string, newPass: string) => {
+      const user = users.find(u => u.id === userId);
+      if (!user || user.password !== oldPass) {
+          return { success: false, message: 'A senha atual está incorreta.' };
+      }
+      
+      setUsers(prevUsers => {
+          const updatedUsers = prevUsers.map(u => 
+              u.id === userId ? { ...u, password: newPass } : u
+          );
+           if (currentUser?.id === userId) {
+              const updatedCurrentUser = updatedUsers.find(u => u.id === userId);
+              if(updatedCurrentUser) setCurrentUser(updatedCurrentUser);
+          }
+          return updatedUsers;
+      });
+
+      return { success: true };
+  };
+
+  const deleteSelf = () => {
+      if (currentUser) {
+          deleteUser(currentUser.id);
+          logout();
+      }
+  };
+
+  const toggleFavoriteGame = (gameId: number) => {
+      if (!currentUser) return;
+      
+      setUsers(prevUsers => {
+          const user = prevUsers.find(u => u.id === currentUser.id);
+          if (!user) return prevUsers;
+
+          const isFavorited = user.favorites.includes(gameId);
+          const newFavorites = isFavorited
+            ? user.favorites.filter(id => id !== gameId)
+            : [...user.favorites, gameId];
+            
+          const updatedUsers = prevUsers.map(u => 
+              u.id === currentUser.id ? { ...u, favorites: newFavorites } : u
+          );
+
+          const updatedCurrentUser = updatedUsers.find(u => u.id === currentUser.id);
+          if(updatedCurrentUser) setCurrentUser(updatedCurrentUser);
+          
+          return updatedUsers;
+      });
+  };
+
+
+  const value = { currentUser, users, login, logout, signup, updateUserStatus, deleteUser, updateProfile, changePassword, deleteSelf, toggleFavoriteGame };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -19,6 +19,7 @@ export interface User {
   password;
   status: UserStatus;
   isAdmin: boolean;
+  favorites: number[];
 }
 
-export type Page = 'login' | 'signup' | 'home' | 'about' | 'admin';
+export type Page = 'login' | 'signup' | 'home' | 'about' | 'admin' | 'profile' | 'favorites' | 'help';
