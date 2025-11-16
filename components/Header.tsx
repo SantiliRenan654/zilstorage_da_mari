@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Page } from '../types';
 import SearchIcon from './icons/SearchIcon';
+import UserIcon from './icons/UserIcon';
+import ChevronDownIcon from './icons/ChevronDownIcon';
+import { useAuth } from '../contexts/AuthContext';
+
 
 interface HeaderProps {
   onNavigate: (page: Page) => void;
@@ -8,14 +12,45 @@ interface HeaderProps {
   showAdminLink: boolean;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  currentPage: Page;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, searchQuery, onSearchChange }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, searchQuery, onSearchChange, currentPage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { currentUser } = useAuth();
 
   const handleNavClick = (page: Page) => {
     onNavigate(page);
     setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
+  }
+
+  const handleUserMenuNav = (page: Page) => {
+    onNavigate(page);
+    setIsUserMenuOpen(false);
+  }
+
+  const handleLogoutClick = () => {
+    onLogout();
+    setIsUserMenuOpen(false);
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuRef]);
+  
+  const getNavClass = (page: Page) => {
+     return currentPage === page ? 'text-gray-900 underline' : 'text-gray-500 hover:text-gray-900 hover:underline';
   }
 
   return (
@@ -28,10 +63,12 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
               <span className="text-2xl font-bold text-black">STORAGE</span>
             </button>
             <nav className="hidden md:ml-10 md:flex md:space-x-8">
-              <button onClick={() => handleNavClick('home')} className="text-base font-medium text-gray-500 hover:text-gray-900 hover:underline">Início</button>
-              <button onClick={() => handleNavClick('about')} className="text-base font-medium text-gray-500 hover:text-gray-900 hover:underline">Sobre nós</button>
+              <button onClick={() => handleNavClick('home')} className={`text-base font-medium ${getNavClass('home')}`}>Início</button>
+              <button onClick={() => handleNavClick('favorites')} className={`text-base font-medium ${getNavClass('favorites')}`}>Meus Jogos Salvos</button>
+              <button onClick={() => handleNavClick('about')} className={`text-base font-medium ${getNavClass('about')}`}>Sobre nós</button>
+              <button onClick={() => handleNavClick('help')} className={`text-base font-medium ${getNavClass('help')}`}>Ajuda</button>
               {showAdminLink && (
-                <button onClick={() => handleNavClick('admin')} className="text-base font-medium text-gray-500 hover:text-gray-900 hover:underline">Administrador</button>
+                <button onClick={() => handleNavClick('admin')} className={`text-base font-medium ${getNavClass('admin')}`}>Administrador</button>
               )}
             </nav>
           </div>
@@ -46,12 +83,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
                  onChange={(e) => onSearchChange(e.target.value)}
                  />
              </div>
-             <button 
-                 onClick={onLogout}
-                 className="bg-black text-white font-bold py-2 px-6 rounded-md hover:bg-gray-800 transition-colors"
-             >
-                 Sair
-             </button>
+              <div className="relative" ref={userMenuRef}>
+                <button onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                  <UserIcon className="w-6 h-6 text-gray-600" />
+                  <span className="font-medium text-gray-700 text-sm hidden lg:inline">{currentUser?.name.split(' ')[0]}</span>
+                  <ChevronDownIcon className={`w-4 h-4 text-gray-600 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isUserMenuOpen && (
+                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <button onClick={() => handleUserMenuNav('profile')} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Meu Perfil</button>
+                      <button onClick={handleLogoutClick} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sair</button>
+                    </div>
+                  </div>
+                )}
+              </div>
          </div>
          <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
@@ -76,7 +122,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
             <div className="shadow-lg ring-1 ring-black ring-opacity-5 bg-white">
                 <div className="px-2 pt-2 pb-3 space-y-1">
                     <button onClick={() => handleNavClick('home')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Início</button>
+                    <button onClick={() => handleNavClick('favorites')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Meus Jogos Salvos</button>
                     <button onClick={() => handleNavClick('about')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Sobre nós</button>
+                    <button onClick={() => handleNavClick('help')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Ajuda</button>
                     {showAdminLink && (
                         <button onClick={() => handleNavClick('admin')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Administrador</button>
                     )}
@@ -94,9 +142,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
                             />
                         </div>
                     </div>
-                    <div className="px-2">
+                    <div className="px-2 space-y-2">
+                       <button onClick={() => handleUserMenuNav('profile')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Meu Perfil</button>
                         <button 
-                            onClick={onLogout}
+                            onClick={handleLogoutClick}
                             className="w-full bg-black text-white font-bold py-2 px-4 rounded-md hover:bg-gray-800 transition-colors"
                         >
                             Sair
