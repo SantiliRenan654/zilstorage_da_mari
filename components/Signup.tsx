@@ -1,29 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import AuthHeader from './AuthHeader';
 
 interface SignupProps {
   onNavigateToLogin: () => void;
 }
 
-// Fix: Added a named interface for SignupWindow props to resolve children prop type error.
 interface SignupWindowProps {
   children: React.ReactNode;
 }
 
-// Fix: Moved SignupWindow outside of the Signup component to prevent re-rendering issues that caused input fields to lose focus after each character typed.
 const SignupWindow = ({children}: SignupWindowProps) => (
      <div className="w-full max-w-sm bg-[#3c3c3c] rounded-lg shadow-2xl overflow-hidden border border-gray-800">
-        <div className="bg-[#2a2a2a] p-2 flex justify-between items-center border-b border-gray-500">
-            <div className="flex items-center space-x-2">
-               <span className="text-sm font-semibold text-green-400">Zil</span>
-               <span className="text-sm font-semibold text-gray-300">STORAGE</span>
-            </div>
-             <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-        </div>
+        <AuthHeader />
         <div className="p-8 text-white">
             {children}
         </div>

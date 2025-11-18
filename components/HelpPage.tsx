@@ -1,8 +1,11 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useHelp } from '../contexts/HelpContext';
 
 const HelpPage: React.FC = () => {
   const { currentUser } = useAuth();
+  const { addMessage } = useHelp();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
@@ -10,13 +13,14 @@ const HelpPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simulate sending a message
-    console.log({
-      name: currentUser?.name,
-      email: currentUser?.email,
-      subject,
-      message,
-    });
+    if (currentUser) {
+        addMessage({
+            name: currentUser.name,
+            email: currentUser.email,
+            subject,
+            message
+        });
+    }
 
     // Show success message and reset form
     setStatusMessage('Sua mensagem foi enviada com sucesso! Entraremos em contato em breve.');

@@ -1,3 +1,4 @@
+
 export interface Game {
   id: number;
   name: string;
@@ -22,6 +23,15 @@ export interface User {
   status: UserStatus;
   isAdmin: boolean;
   favorites: number[];
+}
+
+export interface HelpMessage {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  date: string;
 }
 
 export type Page = 'login' | 'signup' | 'home' | 'about' | 'admin' | 'profile' | 'favorites' | 'help' | 'dashboard';

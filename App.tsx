@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Page, Game } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { GameProvider } from './contexts/GameContext';
+import { HelpProvider } from './contexts/HelpContext';
 import Header from './components/Header';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -124,7 +126,9 @@ function App() {
   return (
     <AuthProvider>
       <GameProvider>
-        <AppContent />
+        <HelpProvider>
+          <AppContent />
+        </HelpProvider>
       </GameProvider>
     </AuthProvider>
   );
