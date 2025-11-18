@@ -11,6 +11,7 @@ import HomePage from './components/HomePage';
 import ProfilePage from './components/ProfilePage';
 import FavoritesPage from './components/FavoritesPage';
 import HelpPage from './components/HelpPage';
+import DashboardPage from './components/DashboardPage';
 import GameDetailsModal from './components/GameDetailsModal';
 import { useGames } from './contexts/GameContext';
 
@@ -42,7 +43,7 @@ function AppContent() {
         document.body.classList.add('bg-gray-200');
     } else if (page === 'home' || page === 'favorites') {
         document.body.classList.add('bg-black');
-    } else if (page === 'admin' || page === 'about' || page === 'profile' || page === 'help') {
+    } else if (page === 'admin' || page === 'about' || page === 'profile' || page === 'help' || page === 'dashboard') {
         document.body.classList.add('bg-slate-800');
     } else {
         document.body.classList.add('bg-gray-200');
@@ -93,6 +94,8 @@ function AppContent() {
         return <FavoritesPage searchQuery={searchQuery} onShowDetails={handleShowDetails} onNavigate={handleNavigate} />;
       case 'help':
         return <HelpPage />;
+      case 'dashboard':
+        return <DashboardPage onShowDetails={handleShowDetails} />;
       default:
         // Default to home page if logged in and page is not set
         return <HomePage searchQuery={searchQuery} onNavigate={handleNavigate} onShowDetails={handleShowDetails}/>;

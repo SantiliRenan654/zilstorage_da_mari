@@ -92,6 +92,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
                 {isUserMenuOpen && (
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
                     <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <button onClick={() => handleUserMenuNav('dashboard')} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Dashboard</button>
                       <button onClick={() => handleUserMenuNav('profile')} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Meu Perfil</button>
                       <button onClick={handleLogoutClick} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sair</button>
                     </div>
@@ -143,6 +144,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, onLogout, showAdminLink, se
                         </div>
                     </div>
                     <div className="px-2 space-y-2">
+                       <button onClick={() => handleUserMenuNav('dashboard')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Dashboard</button>
                        <button onClick={() => handleUserMenuNav('profile')} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Meu Perfil</button>
                         <button 
                             onClick={handleLogoutClick}

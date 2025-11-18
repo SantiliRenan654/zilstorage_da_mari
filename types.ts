@@ -3,6 +3,7 @@ export interface Game {
   name: string;
   image: string;
   description: string;
+  // Fix: Changed launchDate type from Date to string to match mock data and component usage.
   launchDate: string;
   developer: string;
   classification: string;
@@ -16,10 +17,11 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  password;
+  // Fix: Corrected typo in password property definition.
+  password: string;
   status: UserStatus;
   isAdmin: boolean;
   favorites: number[];
 }
 
-export type Page = 'login' | 'signup' | 'home' | 'about' | 'admin' | 'profile' | 'favorites' | 'help';
+export type Page = 'login' | 'signup' | 'home' | 'about' | 'admin' | 'profile' | 'favorites' | 'help' | 'dashboard';
