@@ -1,5 +1,5 @@
 {
   "name": "ZilSTORAGE",
-  "description": "A modern UI for a game library, showcasing trending and newly released games with a sleek, dark-themed interface inspired by popular gaming platforms.",
+  "description": "Uma Interface de Usuário (UI) moderna para uma biblioteca de jogos, apresentando jogos em alta (trending) e recém-lançados, com uma interface elegante de tema escuro, inspirada em plataformas de jogos populares.",
   "requestFramePermissions": []
 }
