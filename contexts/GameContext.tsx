@@ -58,7 +58,6 @@ interface GameContextType {
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-// Fix: Added a named interface for GameProvider props to resolve children prop type error.
 interface GameProviderProps {
   children: ReactNode;
 }
