@@ -25,22 +25,22 @@ function AppContent() {
   const { currentUser, logout } = useAuth();
   const { games } = useGames();
 
-  // Effect to handle navigation on login and logout
+  // Efeito para lidar com a navegação no login e logout
   useEffect(() => {
-    // If user is logged in and on a public page, navigate to home
+    // Se o usuário estiver logado e em uma página pública, navegue para a home
     if (currentUser && (page === 'login' || page === 'signup')) {
       setPage('home');
     }
-    // If user is not logged in and not on a public page, navigate to login
+    // Se o usuário não estiver logado e não estiver em uma página pública, navegue para o login
     if (!currentUser && page !== 'login' && page !== 'signup') {
       setPage('login');
     }
   }, [currentUser, page]);
 
 
-  // Set body background color based on current page
+  // Define a cor de fundo do corpo (body) com base na página atual
   useEffect(() => {
-    document.body.className = 'font-sans'; // Reset classes
+    document.body.className = 'font-sans'; //Reseta as classes
     if (!currentUser) {
         document.body.classList.add('bg-gray-200');
     } else if (page === 'home' || page === 'favorites') {
@@ -55,7 +55,7 @@ function AppContent() {
 
   const handleNavigate = (newPage: Page) => {
     if (newPage === 'admin' && !currentUser?.isAdmin) {
-      return; // Prevent non-admins from accessing admin page
+      return; // Impede que não-administradores acessem a página de administração (admin)
     }
     setPage(newPage);
   }
@@ -89,7 +89,7 @@ function AppContent() {
         if (currentUser?.isAdmin) {
           return <AdminPage />;
         }
-        return null; // Or a "Not Authorized" component
+        return null; // Ou um componente de "Não Autorizado"
       case 'profile':
         return <ProfilePage />;
       case 'favorites':
@@ -99,7 +99,7 @@ function AppContent() {
       case 'dashboard':
         return <DashboardPage onShowDetails={handleShowDetails} />;
       default:
-        // Default to home page if logged in and page is not set
+        // Define a página inicial (home) como padrão se estiver logado e a página não estiver definida
         return <HomePage searchQuery={searchQuery} onNavigate={handleNavigate} onShowDetails={handleShowDetails}/>;
     }
   };
